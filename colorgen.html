@@ -1,0 +1,74 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>random colors tool</title>
+<meta name="description" content="Random color palette generator tool">
+<style>
+* {margin:0;padding:0;font: 28px monospace;text-align:center}
+html, body { height: 100% }
+body { display: flex; flex-direction: column }
+main { flex: 1 0 auto }
+h1,button,div {padding:0.5em 0}
+button {min-width: 40%;margin-bottom: 20px}
+div {text-transform: uppercase}
+footer a { font-size: 0.4em }
+</style>
+
+
+<main>
+	<h1>find some color</h1>
+	<section></section>
+	<button>fresh paint</button>
+</main>
+<footer><a href="https://furycodes.com">who made this?</a></footer>
+
+<script>
+Array.prototype.chain = function(fn) { return fn(this) || this; };
+
+// like `list(range(*args))` in python
+// supported calling conventions:
+// (stop) [step=1, start=0]
+// (start, stop) [step=1]
+// (start, stop, step)
+function range(start, stop, step=1) {
+	if (stop == null) {
+		stop = start;
+		start = 0;
+	}
+	const out = [];
+	for (let i = start; i < stop; i += step) out.push(i);
+	return out;
+}
+
+// format an array of colors into rgb hex
+const formatColors = colors =>
+	colors.map(c => `000000${c.toString(16)}`.substr(-6));
+
+
+Application: {
+	const drawUI = colors =>
+		document.querySelector('section').innerHTML = colors
+			.map(h => `<div style="background:#${h}">#${h}</div>`)
+			.join('');
+
+	const redraw = () =>
+		range(6) // web colors are 24-bit without transparency
+			.map(_ => Math.random() * 0x1000000 | 0)
+			.chain(colors => {
+				// update hash so palette can be shared/saved
+				location.hash = '#' + formatColors(colors).join('-');
+			})
+			.chain(formatColors)
+			.chain(drawUI);
+
+	// on init, load preset from url or generate fresh set
+	const presets = location.hash.substr(1);
+	presets ?
+		presets.split('-').chain(drawUI) :
+		redraw();
+
+	document.querySelector('button').addEventListener('click', redraw);
+}
+
+
+</script>
+&divide;&divide;&divide;&divide;

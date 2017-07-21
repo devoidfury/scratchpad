@@ -1,0 +1,90 @@
+<pre id="out"></pre>
+<script>
+//   +-+
+//  /0/|
+// +-+0+
+// |0|/
+// +-+ (rect)
+
+function askNumber(name, max) {
+	let num
+	while (!num || isNaN(num) || num < 3 || num > max)
+		num = parseInt(prompt(`Please enter the ${name} (between 3-${max})`), 10)
+	return num
+}
+
+function makeRect(width, height, depth) {
+	const gridHeight = height + depth - 1
+	const gridWidth = width + depth - 1
+
+	const hDepthOffset = gridHeight - height
+	const wDepthOffset = gridWidth - width
+
+	let out = ''
+	for (let currH = 0; currH < gridHeight; currH++) {
+		for (let currW = 0; currW < gridWidth; currW++) {
+			// top left empty corner
+			if (currH < hDepthOffset && currW < wDepthOffset - currH)
+				out += ' '
+			// top left and middle left joints
+			else if ((currH == 0 || currH == hDepthOffset) && currW == wDepthOffset - currH)
+				out += '+'
+			// top right and middle right joint
+			else if ((currH == 0 || currH == height - 1) && currW == gridWidth - 1)
+				out += '+'
+			// bottom two joint
+			else if (currH == gridHeight - 1 && (currW == 0 || currW == width - 1))
+				out += '+'
+			// square top left joint (center joint)
+			else if (currH == hDepthOffset && currW == width - 1)
+				out += '+'
+			// top right depth side
+			else if (currH < height && currW == gridWidth - 1)
+				out += '|'
+			// far top side
+			else if (currH == 0 && currW > wDepthOffset)
+				out += '-'
+			// square top side
+			else if (currH == hDepthOffset && currW < width)
+				out += '-'
+			// top left depth slant
+			else if (currH <= hDepthOffset && currW == wDepthOffset - currH)
+				out += '/'
+			// top right depth slant
+			else if (currH <= hDepthOffset && currW == width - currH + wDepthOffset - 1)
+				out += '/'
+			// square left
+			else if (currH > hDepthOffset && currW == 0)
+				out += '|'
+			// square right
+			else if (currH > hDepthOffset && currW == width - 1)
+				out += '|'
+			// square bottom
+			else if (currH == gridHeight - 1 && currW < width)
+				out += '-'
+			// bottom right depth slant
+			else if (currH >= height && currW == gridHeight - currH + width - 2)
+				out += '/'
+			// bottom right empty
+			else if (currH >= height && currW > gridHeight - currH + width - 2)
+				out += ' '
+			// zero everything else
+			else out += '0'
+		}
+		out += '\n'
+	}
+	return out
+}
+
+// const width = askNumber('width', 40)
+// const height = askNumber('height', 40)
+// const depth = askNumber('depth', 40)
+
+
+const width = (Math.random() * 10 | 0) + 3
+const height = (Math.random() * 10 | 0) + 3
+const depth = (Math.random() * 10 | 0) + 3
+
+document.getElementById('out').textContent = makeRect(width, height, depth) +
+	`\n\n${width}w x ${height}h x ${depth}d (${width * height * depth} volume)`
+</script>
