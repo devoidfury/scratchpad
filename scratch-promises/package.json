@@ -1,0 +1,14 @@
+{
+  "name": "scratch-promises",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/promises-aplus-tests/lib/cli.js index.js"
+  },
+  "author": "",
+  "license": "mit",
+  "dependencies": {
+    "promises-aplus-tests": "^2.1.2"
+  }
+}
