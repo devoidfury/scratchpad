@@ -1,13 +1,18 @@
-DEPTH = 15
+# example recursive map implementation
+def mymap(fn, targets):
+	def map(source, dest):
+		if not source:
+			return dest
+		dest.append(fn(source[0]))
+		return map(source[1:], dest)
+	return map(targets, [])
 
-def mymap(fn, things, ret=None):
-	if not ret:
-		ret = []
-	if len(things):
-		ret.append(fn(things[0]))
-		return mymap(fn, things[1:], ret)
-	else:
-		return ret
+# this has some limits, namely that it doesn't handle all iterables.
+# a better solution might look like:
+def mymap(fn, targets):
+	return (fn(item) for item in targets)
+# however at that point, it's likely clearer to just use the generator
+# expression inline
 
 
 DEPTH = 15

@@ -6,7 +6,7 @@ app.get('/', function(req, res) {
 	res.send(`
 		<script src="/socket.io/socket.io.js"></script>
 		<script>
-		  var socket = io();
+		  var socket = io.connect("http://localhost:3000");
 		</script>
 	`);
 })

@@ -2,22 +2,20 @@
 // $ curl --unix-socket ./my.sock http://what/lol
 
 // nodejs core cluster module example usage
-
 const cluster = require('cluster');
-const http = require('http');
-const fs = require('fs');
-const numCPUs = require('os').cpus().length;
 const sock_path = './my.sock';
 
 if (cluster.isMaster) {
   console.log(`Master ${process.pid} is running`);
   // clean up leftover unix socket
   try{
+    const fs = require('fs');
     fs.unlinkSync(sock_path);
   // possible error is leftover unix socket missing, that's OK
   } catch(e) {}
 
   // Fork workers.
+  const numCPUs = require('os').cpus().length;
   for (let i = 0; i < numCPUs; i++) {
     cluster.fork();
   }
@@ -25,6 +23,7 @@ if (cluster.isMaster) {
     console.log(`worker ${worker.process.pid} died`);
   });
 } else {
+  const http = require('http');
   // Workers can share any TCP connection
   // In this case it is an HTTP server
   http.createServer((req, res) => {
