@@ -10,16 +10,16 @@ require "curses"
 include Curses
 
 # ensure clean exit -----------------------
-def clean_exit(sig)
-  close_screen # clean up tty
-  exit sig # clean exit
-end
+#def clean_exit(sig)
+#  close_screen # clean up tty
+#  exit sig # clean exit
+#end
 
-(1..15).each do |i|
-  if trap(i, "SIG_IGN") != 0 then
-    trap(i) {|sig| clean_exit(sig) }
-  end
-end
+#(1..15).each do |i|
+#  if trap(i, "SIG_IGN") != 0 then
+#    trap(15) {|sig| clean_exit(sig) }
+#  end
+#end
 
 # fire it up -------------------------------
 init_screen
