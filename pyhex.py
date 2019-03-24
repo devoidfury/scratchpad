@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 import argparse
 import inspect
-
+from string import whitespace
+from signal import signal, SIGPIPE, SIG_DFL
 
 class ByteViewer:
 	"""
-	class for viewing a slice of the hexadecimal byte values in a file, 
+	class for viewing a slice of the hexadecimal byte values in a file,
 	by displaying the byte values as hex numbers instead of whatever encoding
 	they may be in (ascii or utf-8, typically, for a text file)
 	"""
@@ -38,7 +39,7 @@ class ByteViewer:
 	def read_raw(self) -> list:
 		"""Reads a raw line from the file."""
 		raw_bytes = []
-		for i in range(self.line_length):
+		for _ in range(self.line_length):
 			byte = self.file.read(1)
 			if self.at_end or not byte:
 				break
@@ -48,7 +49,7 @@ class ByteViewer:
 	def format_line(self, raw_bytes) -> str:
 		"""Formats a line for pretty printing."""
 		raw_line = bytes.join(b'', raw_bytes).decode('ascii', 'replace')
-		raw_line = ''.join('.' if c in ' \t\n\r\f\v' else c for c in raw_line)
+		raw_line = ''.join('.' if c in whitespace else c for c in raw_line)
 		chars = ''.join(format(ord(byte), '02x') for byte in raw_bytes)
 		hex_str = ' '.join(chars[i:i+4] for i in range(0, len(chars), 4))
 		return self.fmt_str.format(hex_str, raw_line)
@@ -83,13 +84,16 @@ def arg_parser(defaults):
 
 
 def get_fn_defaults(fn):
-	args = inspect.getargspec(fn)
+	args = inspect.getfullargspec(fn)
 	names_with_defaults = args.args[-len(args.defaults):]
 	defaults = dict(zip(names_with_defaults, args.defaults))
 	return defaults
 
 
 if __name__ == '__main__':
+	# don't throw an error if no process is reading stdout, just quit
+	# (eg when piping to the head command)
+	signal(SIGPIPE, SIG_DFL)
 	args = arg_parser(get_fn_defaults(ByteViewer))
 	viewer = ByteViewer(args.file, args.nbytes, args.offset, args.line_length)
 	for line in viewer:
